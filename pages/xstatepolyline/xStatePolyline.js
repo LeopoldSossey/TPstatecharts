@@ -16,11 +16,52 @@ let polyline // La polyline en cours de construction;
 
 const polylineMachine = createMachine(
     {
-        /** @xstate-layout N4IgpgJg5mDOIC5gF8A0IB2B7CdGgAcsAbATwBkBLDMfEI2SgF0qwzoA9EBaANnVI9eAOgAM4iZMkB2ZGnokK1MMMoRitJAsYs2nRABYATAMQAOAIzCD0gJwXetgwGZezgw9ty5QA */
+        /** @xstate-layout N4IgpgJg5mDOIC5QAcD2AbAngGQJYDswA6XCdMAYgFkB5AVQGUBRAYWwEkWBpAbQAYAuohSpYuAC65U+YSAAeiAEwA2AKxEAnBoAcqgCwBGRUb0B2DYtMAaEJkQBaNQaIGAzMdUbPBvgYMBffxs0LDxCIggAJwBDAHcCKGp6ZloANSZ+ISQQNDFJaVkFBGU9PSJVU19FPVU+PUVXcxs7BHsNHyI9PlVPVz4G1y1A4IwcAmIouISkxlYObkzZXIkpGWyivu0ibUUqmrqGptsHdr5O7s99121TbWGc0bCJmPj8RKZYAGNo5DBF7OW+TWoCKig0ZT4lR8yj43R0qmaDn0rhcPRhhgMXm0fnuITG4Umr0SACFop8ANawZBkv6CJaiFYFdaIHyw8pQ6q1eqNDSI1rKAymbY7AxmbTg2GlXGPcYRF7TJj4cRgSL-ER5VaFRAw5REYyQvReA48vn2Lq6jQXDR9AZDe74VAQOD00LjekapkgxCedm+NymRTaPheIymrRCy09cG1a63aWu8KkcjuxnA+QsyG+vyNQPB1Sh478wPnKM21yDDTx-HPKZvFNArUIfQaLMGZQ3PTaPSuPSmkplAw9Xr9ct2wJAA */
         id: "polyLine",
         initial: "idle",
         states : {
             idle: {
+                on: {
+                    MOUSECLICK: {
+                        target: "drawing",
+                        actions: "createLine"
+                    }
+                }
+            },
+
+            drawing: {
+                on: {
+                    MOUSEMOVE: {
+                        target: "drawing",
+                        internal: true,
+                        actions: "setLastPoint"
+                    },
+
+                    MOUSECLICK: {
+                        target: "drawing",
+                        actions: ["addPoint"],
+                        internal: true,
+                        cond: "pasPlein"
+                    },
+
+                    Escape: {
+                        target: "idle",
+                        actions: "abandon"
+                    },
+
+                    Backspace: {
+                        target: "drawing",
+                        internal: true,
+                        actions: "removeLastPoint",
+                        cond: "plusDeDeuxPoints"
+                    },
+
+                    Enter: {
+                        target: "idle",
+                        actions: "saveLine",
+                        cond: "plusDeDeuxPoints"
+                    }
+                }
             }
         }
     },
